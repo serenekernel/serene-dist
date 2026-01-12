@@ -1,5 +1,5 @@
 source/kernel {
-    url: "https://github.com/serenekernel/serene-testing.git"
+    url: "https://github.com/serenekernel/serene.git"
     revision: "main"
     type: "git"
 }
