@@ -1,0 +1,17 @@
+source/kernel {
+    url: "https://github.com/serenekernel/serene-testing.git"
+    revision: "main"
+    type: "git"
+}
+
+custom/kernel {
+    dependencies: [ source/kernel tool/fabricate image/nasm image/clang image/lld image/llvm image/ninja-build ]
+    options: [ "arch" ]
+    configure: <sh>
+        fabricate --build-dir=$BUILD_DIR setup \
+            --config=$SOURCES_DIR/kernel/fab.lua \
+            --prefix=/ \
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>fabricate --build-dir=$BUILD_DIR install --dest-dir=$INSTALL_DIR</sh>
+}

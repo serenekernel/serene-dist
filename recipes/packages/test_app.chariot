@@ -1,0 +1,22 @@
+source/test_app {
+    url: "https://github.com/serenekernel/test-app.git"
+    type: "git"
+    revision: "main"
+}
+
+package/test_app {
+    dependencies: [ source/test_app image/rustup image/lld image/clang image/libssl-dev image/pkgconf ]
+    options: [ "arch" ]
+    configure: <sh>
+        rustup default nightly
+        rustup component add rust-src
+    </sh>
+    build: <sh>
+        cd $SOURCES_DIR/test_app
+        rustup component add rust-src
+        cargo build --release --target-dir $BUILD_DIR
+    </sh>
+    install: <sh>
+        install -D x86_64-serene/release/test $INSTALL_DIR$PREFIX/test.elf
+    </sh>
+}
