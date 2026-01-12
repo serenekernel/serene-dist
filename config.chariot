@@ -1,0 +1,111 @@
+@import "recipes/**/*.chariot"
+
+@env "CLICOLOR_FORCE" = "1"
+
+@option "arch" = [ "x86_64" ]
+@option "buildtype" = [ "debug", "release" ]
+
+source/fabricate {
+    url: "https://github.com/elysium-os/fabricate.git"
+    revision: "2db876cdadfb1795522409c7791fae4d2687fefa"
+    type: "git"
+}
+
+tool/fabricate {
+    dependencies: [ source/fabricate image/rustc image/cargo image/clang image/libssl-dev image/pkgconf ]
+    build: <sh>
+        cd $SOURCES_DIR/fabricate
+        cargo build \
+            --profile release \
+            --target-dir $BUILD_DIR
+    </sh>
+    install: <sh>
+        install -D release/fabricate $INSTALL_DIR$PREFIX/bin/fabricate
+    </sh>
+}
+
+source/kernel {
+    url: "https://github.com/serenekernel/serene-testing.git"
+    revision: "main"
+    type: "git"
+}
+
+source/limine {
+    url: "https://codeberg.org/Limine/Limine.git"
+    type: "git"
+    revision: "v10.x-binary"
+}
+
+source/test_app {
+    url: "https://github.com/serenekernel/test-app.git"
+    type: "git"
+    revision: "main"
+}
+
+tool/limine {
+    dependencies: [ source/limine image/clang image/lld image/make ]
+    build: <sh>
+        cc -g -O2 -pipe -std=c99 SOURCES_DIR/limine/limine.c -o limine
+    </sh>
+    install: <sh>
+        install -D limine $INSTALL_DIR$PREFIX/bin/limine
+    </sh>
+}
+
+custom/kernel {
+    dependencies: [ source/kernel tool/fabricate image/nasm image/clang image/lld image/llvm image/ninja-build ]
+    options: [ "arch" ]
+    configure: <sh>
+        fabricate --build-dir=$BUILD_DIR setup \
+            --config=$SOURCES_DIR/kernel/fab.lua \
+            --prefix=/ \
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>fabricate --build-dir=$BUILD_DIR install --dest-dir=$INSTALL_DIR</sh>
+}
+
+package/test_app {
+    dependencies: [ source/test_app image/rustup image/lld image/clang image/libssl-dev image/pkgconf ]
+    options: [ "arch" ]
+    configure: <sh>
+        rustup default nightly
+        rustup component add rust-src
+    </sh>
+    build: <sh>
+        cd $SOURCES_DIR/test_app
+        rustup component add rust-src
+        cargo build --release --target-dir $BUILD_DIR
+    </sh>
+    install: <sh>
+        install -D x86_64-serene/release/test $INSTALL_DIR$PREFIX/test.elf
+    </sh>
+}
+
+custom/image {
+    dependencies: [ custom/kernel package/test_app image/xorriso tool/limine source/limine source/kernel ]
+    options: [ "arch" ]
+    build: <sh>
+        mkdir -p iso_root/EFI/BOOT 
+        mkdir -p iso_root/boot
+
+        cp $CUSTOM_DIR/kernel/kernel.elf ./iso_root/boot/kernel
+        cp $SYSROOT_DIR/usr/bin/test.elf ./iso_root/boot/test.elf
+        
+        cp $SOURCES_DIR/kernel/limine.conf ./iso_root
+        cp $SOURCES_DIR/limine/limine-bios-cd.bin ./iso_root
+        cp $SOURCES_DIR/limine/limine-bios.sys ./iso_root
+        cp $SOURCES_DIR/limine/limine-uefi-cd.bin ./iso_root
+        cp $SOURCES_DIR/limine/BOOTX64.EFI ./iso_root/EFI/BOOT
+
+        xorriso -as mkisofs \
+    		-no-emul-boot -boot-load-size 4 -boot-info-table \
+            -b limine-bios-cd.bin \
+    		--efi-boot limine-uefi-cd.bin \
+    		-efi-boot-part --efi-boot-image --protective-msdos-label \
+    		iso_root -o output.iso
+        limine bios-install output.iso
+    </sh>
+    install: <sh>install output.iso $INSTALL_DIR</sh>
+}
+
+
