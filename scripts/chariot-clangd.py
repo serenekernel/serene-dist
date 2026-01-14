@@ -6,7 +6,7 @@ import sys
 from os.path import abspath, dirname
 
 project_path = dirname(dirname(abspath(__file__)))
-recipe_source_path = os.getcwd()
+recipe_source_path = os.getcwd() + "/kernel"
 
 if len(sys.argv) < 3:
     print("Usage: chariot_clangd.py <package> <source name>", file=sys.stderr)
@@ -16,7 +16,7 @@ mappings = [f"{recipe_source_path}=$SOURCES_DIR/{sys.argv[2]}"]
 
 result = subprocess.run(
     [
-        "chariot",
+        "/home/dev/.cargo/bin/chariot",
         "--config",
         project_path + "/config.chariot",
         "--no-lockfile",
