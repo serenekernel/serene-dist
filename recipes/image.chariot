@@ -1,5 +1,5 @@
 custom/image {
-    dependencies: [ custom/kernel package/test_app image/xorriso tool/limine source/limine source/kernel ]
+    dependencies: [ custom/kernel package/test_app package/init_system image/xorriso tool/limine source/limine source/kernel ]
     options: [ "arch" ]
     build: <sh>
         mkdir -p iso_root/EFI/BOOT 
@@ -7,6 +7,7 @@ custom/image {
 
         cp $CUSTOM_DIR/kernel/kernel.elf ./iso_root/boot/kernel
         cp $SYSROOT_DIR/usr/bin/test.elf ./iso_root/boot/test.elf
+        cp $SYSROOT_DIR/usr/bin/init_system.elf ./iso_root/boot/init_system.elf
         
         cp $SOURCES_DIR/kernel/limine.conf ./iso_root
         cp $SOURCES_DIR/limine/limine-bios-cd.bin ./iso_root

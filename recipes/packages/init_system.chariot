@@ -1,0 +1,22 @@
+source/init_system {
+    url: "https://github.com/serenekernel/init-system"
+    type: "git"
+    revision: "main"
+}
+
+package/init_system {
+    dependencies: [ %source/init_system image/rustup image/lld image/clang image/libssl-dev image/pkgconf ]
+    options: [ "arch" ]
+    configure: <sh>
+        rustup default nightly
+        rustup component add rust-src
+    </sh>
+    build: <sh>
+        cd $SOURCES_DIR/init_system
+        rustup component add rust-src
+        cargo build --release --target-dir $BUILD_DIR
+    </sh>
+    install: <sh>
+        install -D x86_64-serene/release/init_system $INSTALL_DIR$PREFIX/bin/init_system.elf
+    </sh>
+}

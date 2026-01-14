@@ -14,9 +14,9 @@ package/test_app {
     build: <sh>
         cd $SOURCES_DIR/test_app
         rustup component add rust-src
-        cargo build --release --target-dir $BUILD_DIR
+        cargo build --release --target-dir $BUILD_DIR --locked
     </sh>
     install: <sh>
-        install -D x86_64-serene/release/test $INSTALL_DIR$PREFIX/test.elf
+        install -D x86_64-serene/release/test $INSTALL_DIR$PREFIX/bin/test.elf
     </sh>
 }
