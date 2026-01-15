@@ -4,8 +4,13 @@ source/init_system {
     revision: "main"
 }
 
+source/serenelib {
+    url: "../packages/serenelib"
+    type: "local"
+}
+
 package/init_system {
-    dependencies: [ %source/init_system image/rustup image/lld image/clang image/libssl-dev image/pkgconf ]
+    dependencies: [ %source/init_system source/serenelib image/rustup image/lld image/clang image/libssl-dev image/pkgconf ]
     options: [ "arch" ]
     configure: <sh>
         rustup default nightly

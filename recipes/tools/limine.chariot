@@ -7,7 +7,7 @@ source/limine {
 tool/limine {
     dependencies: [ source/limine image/clang image/lld image/make ]
     build: <sh>
-        cc -g -O2 -pipe -std=c99 SOURCES_DIR/limine/limine.c -o limine
+        cc -g -O2 -pipe -std=c99 $SOURCES_DIR/limine/limine.c -o limine
     </sh>
     install: <sh>
         install -D limine $INSTALL_DIR$PREFIX/bin/limine

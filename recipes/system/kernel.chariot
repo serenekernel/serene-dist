@@ -11,6 +11,7 @@ custom/kernel {
         fabricate --build-dir=$BUILD_DIR setup \
             --config=$SOURCES_DIR/kernel/fab.lua \
             --prefix=/ \
+            -o arch=$OPTION_arch
     </sh>
     build: <sh>ninja -j$PARALLELISM</sh>
     install: <sh>fabricate --build-dir=$BUILD_DIR install --dest-dir=$INSTALL_DIR</sh>

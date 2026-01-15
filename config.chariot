@@ -2,5 +2,5 @@
 
 @env "CLICOLOR_FORCE" = "1"
 
-@option "arch" = [ "x86_64" ]
+@option "arch" = [ "x86_64", "aarch64" ]
 @option "buildtype" = [ "debug", "release" ]
