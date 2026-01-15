@@ -13,7 +13,7 @@ def path(recipe: str, options: list[str] | None = None):
         options = []
 
     result = subprocess.run(
-        ["chariot", "--config", config_path(), *options, "path", recipe],
+        ["chariot", "--config", config_path(), *options, "path", recipe, "--raw"],
         capture_output=True,
         text=True,
     )
