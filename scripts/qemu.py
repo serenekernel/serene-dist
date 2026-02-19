@@ -60,12 +60,12 @@ if ARCH == "x86_64":
     if ACCEL == "kvm":    
         qemu_cmd += [
             "-accel", "kvm" ,
-            "-cpu", "host,invtsc=on,x2apic=on,xsave=on,xsaveopt=on,xsavec=on,xsaves=on,avx=on,avx2=on,fma=on"
+            "-cpu", "host,lkgs=on,fred=on,invtsc=on,x2apic=on,xsave=on,xsaveopt=on,xsavec=on,xsaves=on,avx=on,avx2=on,fma=on"
         ]
     else:
         qemu_cmd += [
             "-accel", "tcg" ,
-            "-cpu", "Skylake-Client,invtsc=on,x2apic=on,xsave=on,xsaveopt=on,xsavec=on,xsaves=on,avx=on,avx2=on,fma=on"
+            "-cpu", "Skylake-Client,lkgs=on,fred=on,invtsc=on,x2apic=on,xsave=on,xsaveopt=on,xsavec=on,xsaves=on,avx=on,avx2=on,fma=on"
         ]
 elif ARCH == "aarch64":
     qemu_cmd += [
