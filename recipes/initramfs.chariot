@@ -1,14 +1,15 @@
 custom/initramfs {
-    dependencies: [ custom/kernel package/test_app package/init_system ]
+    dependencies: [ custom/kernel package/test_app package/vfs_server package/init_system ]
     options: [ "arch" ]
     build: <sh>
         mkdir -p initramfs
 
         if [ "$OPTION_arch" = "x86_64" ]; then
             cp $SYSROOT_DIR/usr/bin/test.elf ./initramfs/test.elf
+            cp $SYSROOT_DIR/usr/bin/vfs_server.elf ./initramfs/vfs_server.elf
         fi
 
-        tar -cf initramfs.tar initramfs
+        (cd initramfs && tar -cf ../initramfs.tar .)
         rm -r initramfs
     </sh>
     install: <sh>install initramfs.tar $INSTALL_DIR</sh>

@@ -1,0 +1,22 @@
+source/vfs_server {
+    url: "https://github.com/serenekernel/vfs-server.git"
+    type: "git"
+    revision: "main"
+}
+
+package/vfs_server {
+    dependencies: [ %source/vfs_server image/rustup image/lld image/clang image/libssl-dev image/pkgconf ]
+    options: [ "arch" ]
+    configure: <sh>
+        rustup default nightly
+        rustup component add rust-src
+    </sh>
+    build: <sh>
+        cd $SOURCES_DIR/vfs_server
+        rustup component add rust-src
+        cargo build --release --target-dir $BUILD_DIR
+    </sh>
+    install: <sh>
+        install -D x86_64-serene/release/vfs_server $INSTALL_DIR$PREFIX/bin/vfs_server.elf
+    </sh>
+}
