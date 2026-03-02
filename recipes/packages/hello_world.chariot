@@ -1,0 +1,19 @@
+source/hello_world {
+    url: "../packages/hello_world"
+    type: "local"
+}
+
+package/hello_world {
+    dependencies: [ source/hello_world tool/gcc package/mlibc ]
+    build: <sh>
+        x86_64-serene-gcc -o $SOURCES_DIR/hello_world/hello_world \
+            $SOURCES_DIR/hello_world/hello_world.c \
+            --sysroot=$SYSROOT_DIR \
+            -o $BUILD_DIR/hello_world.elf \
+            -static
+    </sh>
+    install: <sh>
+        mkdir -p $INSTALL_DIR/usr/bin
+        cp -v $BUILD_DIR/hello_world.elf $INSTALL_DIR/usr/bin/
+    </sh>
+}

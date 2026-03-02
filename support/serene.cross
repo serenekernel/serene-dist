@@ -1,0 +1,14 @@
+[host_machine]
+system = 'serene'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+[binaries]
+c = 'x86_64-serene-gcc'
+cpp = 'x86_64-serene-g++'
+ar = 'x86_64-serene-ar'
+strip = 'x86_64-serene-strip'
+ld = 'x86_64-serene-ld'
+[built-in options]
+c_args = ['-march=x86-64', '-mabi=sysv']
+cpp_args = ['-march=x86-64', '-mabi=sysv']

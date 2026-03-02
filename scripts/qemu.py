@@ -41,6 +41,8 @@ qemu_cmd = [
     "--no-reboot",
     "--no-shutdown",
     "-s",
+    "-vga", "none",
+    "-display", "none",
     "-smp", "cpus=2",
     "-cdrom", f"{chariot_utils.path("custom/image", options=["-o", f"arch={ARCH}"]).strip()}/output.iso",
     "-d", "int,cpu_reset",

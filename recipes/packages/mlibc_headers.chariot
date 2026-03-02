@@ -1,0 +1,21 @@
+source/mlibc_headers {
+    url: "https://github.com/serenekernel/mlibc.git"
+    type: "git"
+    revision: "serene"
+    dependencies: [ image/meson ]
+}
+
+package/mlibc_headers {
+    dependencies: [ source/mlibc_headers source/support tool/pkgconf image/meson ]
+    configure: <sh>
+        meson setup \
+            --cross-file $SOURCES_DIR/support/serene.cross \
+            --prefix=$PREFIX \
+            --buildtype=release \
+            -Dheaders_only=true \
+            -Dlinux_option=disabled \
+            $SOURCES_DIR/mlibc_headers
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}

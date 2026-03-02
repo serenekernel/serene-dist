@@ -4,3 +4,8 @@
 
 @option "arch" = [ "x86_64", "aarch64" ]
 @option "buildtype" = [ "debug", "release" ]
+
+source/support {
+    type: "local",
+    url: "support"
+}
