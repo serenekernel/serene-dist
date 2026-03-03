@@ -15,6 +15,7 @@ ARCH = "x86_64"
 ACCEL = "tcg"
 PAUSE = False
 UEFI = False
+XAPIC = True
 for arg in sys.argv[1:]:
     if arg == "--uefi":
         UEFI = True
@@ -26,6 +27,8 @@ for arg in sys.argv[1:]:
         ACCEL = "kvm"
     elif arg == "--pause":
         PAUSE = True
+    elif arg == "--no-xapic":
+        XAPIC = False
 
 if ARCH != "x86_64":
     UEFI = True
@@ -33,6 +36,8 @@ if ARCH != "x86_64":
 if chariot_utils.build(["source/kernel", "source/test_app", "source/init_system", "custom/image"], options=["-o", f"arch={ARCH}"]).returncode != 0:
     print("Build failed")
     exit(1)
+
+
 
 qemu_cmd = [
     "qemu-system-" + ARCH,
@@ -48,6 +53,14 @@ qemu_cmd = [
     "-d", "int,cpu_reset",
     "-D", "qemu_err.log"
 ]
+
+if not XAPIC and ARCH == "x86_64" and ACCEL == "kvm":
+    print("Invalid configuration: xAPIC cannot be disabled when using KVM on x86_64")
+    exit(1)
+
+if not XAPIC and ARCH == "x86_64" and ACCEL == "tcg":
+    qemu_cmd[0] = "../qemu/build/qemu-system-" + ARCH
+    qemu_cmd += ["-global", "apic.x2apic-locked=on", "-global", "apic.x2apic-mce=on"]
 
 if UEFI:
     qemu_cmd += [
